@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>TouchOSC Control Console - KLANGSTOFF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0F0F0F;
+            color: #FFFFFF;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .control-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            padding: 20px;
+            background: #0F0F0F;
+            position: relative;
+        }
+
+        /* Top Volume Control Section */
+        .volume-section {
+            width: 100%;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .volume-label {
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .volume-slider-container {
+            width: calc(100% - 200px);
+            height: 60px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .volume-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #333333;
+            outline: none;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #A80E0E;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 15px rgba(168, 14, 14, 0.6);
+            transition: all 0.2s ease;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #A80E0E;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 15px rgba(168, 14, 14, 0.6);
+        }
+
+        .volume-slider:active::-webkit-slider-thumb {
+            transform: scale(1.2);
+            box-shadow: 0 0 25px rgba(168, 14, 14, 0.8);
+        }
+
+        .volume-slider::-webkit-slider-track {
+            background: linear-gradient(to right, #A80E0E 0%, #333333 0%);
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        /* Middle EQ Controls Section */
+        .eq-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 120px;
+            margin-bottom: 40px;
+        }
+
+        .eq-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .eq-label {
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .rotary-knob {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #0F0F0F;
+            border: 4px solid #A80E0E;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(168, 14, 14, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .rotary-knob:active {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(168, 14, 14, 0.5);
+        }
+
+        .knob-indicator {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 30px;
+            background: #A80E0E;
+            border-radius: 2px;
+            transform-origin: center 50px;
+            transition: transform 0.1s ease;
+        }
+
+        .knob-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #1A1A1A;
+            border: 2px solid #A80E0E;
+        }
+
+        .knob-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Right Fabric Info Box */
+        .fabric-info {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            width: 280px;
+            height: 350px;
+            background: #A80E0E;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 0 25px rgba(168, 14, 14, 0.4);
+            color: #FFFFFF;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-button:hover,
+        .close-button:active {
+            background: #FFFFFF;
+            color: #A80E0E;
+            transform: scale(1.1);
+        }
+
+        .fabric-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            margin-top: 15px;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .fabric-description {
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .fabric-properties {
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .property-item {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 5px;
+        }
+
+        /* Responsive Design for iPad Landscape */
+        @media screen and (max-width: 1024px) {
+            .eq-section {
+                gap: 80px;
+            }
+            
+            .rotary-knob {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .knob-center {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .fabric-info {
+                width: 250px;
+                height: 320px;
+                padding: 20px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .eq-section {
+                gap: 60px;
+            }
+            
+            .rotary-knob {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .knob-indicator {
+                height: 20px;
+                transform-origin: center 30px;
+            }
+            
+            .fabric-info {
+                width: 220px;
+                height: 280px;
+                padding: 15px;
+            }
+            
+            .volume-slider-container {
+                width: calc(100% - 150px);
+            }
+        }
+
+        /* TouchOSC Optimizations */
+        .touchosc-optimized {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        /* Animation Classes */
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bounce-effect {
+            animation: bounce 0.3s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Visual feedback for active states */
+        .active-control {
+            box-shadow: 0 0 30px rgba(168, 14, 14, 0.7) !important;
+        }
+    </style>
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fofficesa7698back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.5"></script>
+</head>
+<body>
+    <div class="control-container touchosc-optimized">
+        <!-- Top Volume Control -->
+        <div class="volume-section">
+            <div class="volume-label">MASTER VOLUME</div>
+            <div class="volume-slider-container">
+                <input type="range" class="volume-slider" id="masterVolume" min="0" max="100" value="75" data-control="master-volume" />
+            </div>
+        </div>
+
+        <!-- Middle EQ Controls -->
+        <div class="eq-section">
+            <div class="eq-control">
+                <div class="eq-label">HIGH</div>
+                <div class="rotary-knob" data-knob="high" data-value="50">
+                    <div class="knob-indicator" style="transform: translateX(-50%) rotate(-90deg);"></div>
+                    <div class="knob-center">
+                        <div class="knob-value">50</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="eq-control">
+                <div class="eq-label">MID</div>
+                <div class="rotary-knob" data-knob="mid" data-value="50">
+                    <div class="knob-indicator" style="transform: translateX(-50%) rotate(-90deg);"></div>
+                    <div class="knob-center">
+                        <div class="knob-value">50</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="eq-control">
+                <div class="eq-label">BASS</div>
+                <div class="rotary-knob" data-knob="bass" data-value="50">
+                    <div class="knob-indicator" style="transform: translateX(-50%) rotate(-90deg);"></div>
+                    <div class="knob-center">
+                        <div class="knob-value">50</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Fabric Info Box -->
+        <div class="fabric-info">
+            <button class="close-button" id="closeButton">×</button>
+            <div class="fabric-name">LEATHER</div>
+            <div class="fabric-description">
+                Premium quality leather with rich acoustic properties. Provides warm, deep resonance with excellent tactile feedback and durability.
+            </div>
+            <div class="fabric-properties">
+                <div class="property-item">
+                    <span>Texture:</span>
+                    <span>Smooth</span>
+                </div>
+                <div class="property-item">
+                    <span>Resonance:</span>
+                    <span>Warm</span>
+                </div>
+                <div class="property-item">
+                    <span>Durability:</span>
+                    <span>High</span>
+                </div>
+                <div class="property-item">
+                    <span>Frequency:</span>
+                    <span>Low-Mid</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TouchOSCControlConsole {
+            constructor() {
+                this.knobValues = {
+                    high: 50,
+                    mid: 50,
+                    bass: 50
+                };
+                this.volumeValue = 75;
+                this.isDragging = false;
+                this.currentKnob = null;
+                
+                this.initializeControls();
+                this.bindEvents();
+            }
+
+            initializeControls() {
+                // Initialize volume slider visual feedback
+                this.updateVolumeSlider(this.volumeValue);
+                
+                // Initialize all knobs
+                Object.keys(this.knobValues).forEach(knob => {
+                    this.updateKnobPosition(knob, this.knobValues[knob]);
+                });
+            }
+
+            bindEvents() {
+                // Volume slider events
+                const volumeSlider = document.getElementById('masterVolume');
+                volumeSlider.addEventListener('input', (e) => {
+                    this.volumeValue = parseInt(e.target.value);
+                    this.updateVolumeSlider(this.volumeValue);
+                    this.handleVolumeChange(this.volumeValue);
+                });
+
+                volumeSlider.addEventListener('touchstart', (e) => {
+                    volumeSlider.classList.add('active-control');
+                });
+
+                volumeSlider.addEventListener('touchend', (e) => {
+                    volumeSlider.classList.remove('active-control');
+                });
+
+                // Rotary knob events
+                document.querySelectorAll('.rotary-knob').forEach(knob => {
+                    this.bindKnobEvents(knob);
+                });
+
+                // Close button event
+                document.getElementById('closeButton').addEventListener('click', (e) => {
+                    this.handleCloseButton();
+                });
+            }
+
+            bindKnobEvents(knobElement) {
+                const knobType = knobElement.dataset.knob;
+                let startY = 0;
+                let startValue = 0;
+
+                // Mouse events
+                knobElement.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    this.isDragging = true;
+                    this.currentKnob = knobType;
+                    startY = e.clientY;
+                    startValue = this.knobValues[knobType];
+                    knobElement.classList.add('active-control');
+                    document.body.style.cursor = 'ns-resize';
+                });
+
+                // Touch events for iPad
+                knobElement.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.isDragging = true;
+                    this.currentKnob = knobType;
+                    startY = e.touches[0].clientY;
+                    startValue = this.knobValues[knobType];
+                    knobElement.classList.add('active-control');
+                    
+                    // Haptic feedback
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(10);
+                    }
+                });
+
+                // Global mouse move
+                document.addEventListener('mousemove', (e) => {
+                    if (this.isDragging && this.currentKnob === knobType) {
+                        const deltaY = startY - e.clientY;
+                        const sensitivity = 2;
+                        let newValue = startValue + (deltaY * sensitivity);
+                        newValue = Math.max(0, Math.min(100, newValue));
+                        
+                        this.knobValues[knobType] = newValue;
+                        this.updateKnobPosition(knobType, newValue);
+                        this.handleKnobChange(knobType, newValue);
+                    }
+                });
+
+                // Global touch move
+                document.addEventListener('touchmove', (e) => {
+                    if (this.isDragging && this.currentKnob === knobType) {
+                        e.preventDefault();
+                        const deltaY = startY - e.touches[0].clientY;
+                        const sensitivity = 1.5;
+                        let newValue = startValue + (deltaY * sensitivity);
+                        newValue = Math.max(0, Math.min(100, newValue));
+                        
+                        this.knobValues[knobType] = newValue;
+                        this.updateKnobPosition(knobType, newValue);
+                        this.handleKnobChange(knobType, newValue);
+                    }
+                });
+
+                // Global mouse up
+                document.addEventListener('mouseup', () => {
+                    if (this.isDragging && this.currentKnob === knobType) {
+                        this.isDragging = false;
+                        this.currentKnob = null;
+                        knobElement.classList.remove('active-control');
+                        document.body.style.cursor = 'default';
+                    }
+                });
+
+                // Global touch end
+                document.addEventListener('touchend', () => {
+                    if (this.isDragging && this.currentKnob === knobType) {
+                        this.isDragging = false;
+                        this.currentKnob = null;
+                        knobElement.classList.remove('active-control');
+                    }
+                });
+            }
+
+            updateVolumeSlider(value) {
+                const slider = document.getElementById('masterVolume');
+                const percentage = value / 100;
+                
+                // Update track fill
+                slider.style.background = `linear-gradient(to right, #A80E0E ${percentage * 100}%, #333333 ${percentage * 100}%)`;
+                
+                // Update glow effect
+                const glowIntensity = 15 + percentage * 10;
+                slider.style.boxShadow = `0 0 ${glowIntensity}px rgba(168, 14, 14, ${0.3 + percentage * 0.4})`;
+            }
+
+            updateKnobPosition(knobType, value) {
+                const knob = document.querySelector(`[data-knob="${knobType}"]`);
+                const indicator = knob.querySelector('.knob-indicator');
+                const valueDisplay = knob.querySelector('.knob-value');
+                
+                // Calculate rotation (-135° to +135°, total 270° range)
+                const rotation = -135 + (value / 100) * 270;
+                indicator.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+                
+                // Update value display
+                valueDisplay.textContent = Math.round(value);
+                
+                // Update knob dataset
+                knob.dataset.value = value;
+                
+                // Update glow based on value
+                const glowIntensity = 20 + (value / 100) * 10;
+                knob.style.boxShadow = `0 0 ${glowIntensity}px rgba(168, 14, 14, ${0.3 + (value / 100) * 0.3})`;
+            }
+
+            handleVolumeChange(value) {
+                console.log(`Master Volume: ${value}%`);
+                
+                // Send OSC message (for TouchOSC integration)
+                if (window.TouchOSC) {
+                    window.TouchOSC.send('/volume/master', value / 100);
+                }
+                
+                // Add bounce effect
+                const slider = document.getElementById('masterVolume');
+                slider.classList.add('bounce-effect');
+                setTimeout(() => {
+                    slider.classList.remove('bounce-effect');
+                }, 300);
+            }
+
+            handleKnobChange(knobType, value) {
+                console.log(`${knobType.toUpperCase()} EQ: ${Math.round(value)}%`);
+                
+                // Send OSC message (for TouchOSC integration)
+                if (window.TouchOSC) {
+                    window.TouchOSC.send(`/eq/${knobType}`, value / 100);
+                }
+                
+                // Haptic feedback
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(5);
+                }
+            }
+
+            handleCloseButton() {
+                console.log('Closing fabric info and returning to material selection');
+                
+                // Add bounce effect to close button
+                const closeButton = document.getElementById('closeButton');
+                closeButton.classList.add('bounce-effect');
+                
+                // Haptic feedback
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(20);
+                }
+                
+                // Simulate navigation back to material selection
+                setTimeout(() => {
+                    // In a real app, this would navigate to material selection page
+                    window.location.href = '/material-selection-interface';
+                }, 200);
+            }
+
+            // Public method to update fabric info (called when selecting different materials)
+            updateFabricInfo(fabricData) {
+                const fabricName = document.querySelector('.fabric-name');
+                const fabricDescription = document.querySelector('.fabric-description');
+                const properties = document.querySelectorAll('.property-item span:last-child');
+                
+                fabricName.textContent = fabricData.name || 'LEATHER';
+                fabricDescription.textContent = fabricData.description || 'Premium quality fabric with unique acoustic properties.';
+                
+                if (fabricData.properties) {
+                    const propertyValues = Object.values(fabricData.properties);
+                    properties.forEach((prop, index) => {
+                        if (propertyValues[index]) {
+                            prop.textContent = propertyValues[index];
+                        }
+                    });
+                }
+            }
+        }
+
+        // Initialize TouchOSC Control Console when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.controlConsole = new TouchOSCControlConsole();
+        });
+
+        // Prevent context menu on long press (iPad optimization)
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Orientation change handler
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                // Re-initialize controls after orientation change
+                if (window.controlConsole) {
+                    window.controlConsole.initializeControls();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animated Material Selection Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0F0F0F;
+            color: #000000;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            /* iPad landscape optimization */
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+        
+        .fabric-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            height: 70vh;
+            position: relative;
+            /* TouchOSC optimized layout */
+            padding: 0 40px;
+        }
+        
+        .fabric-square {
+            background: #A80E0E;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Initial position for falling animation */
+            transform: translateY(-100vh);
+            opacity: 0;
+            /* TouchOSC friendly dimensions */
+            min-width: 120px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 20px;
+            /* Touch target optimization */
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .fabric-square.animate-fall {
+            animation: fallDown 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .fabric-square:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(168, 14, 14, 0.4);
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        .fabric-square:active {
+            transform: translateY(-4px) scale(0.98);
+        }
+        
+        /* Different fabric lengths for curtain effect */
+        .fabric-square:nth-child(1) {
+            height: 300px;
+            animation-delay: 0s;
+        }
+        
+        .fabric-square:nth-child(2) {
+            height: 420px;
+            animation-delay: 0.2s;
+        }
+        
+        .fabric-square:nth-child(3) {
+            height: 280px;
+            animation-delay: 0.4s;
+        }
+        
+        .fabric-square:nth-child(4) {
+            height: 380px;
+            animation-delay: 0.6s;
+        }
+        
+        .fabric-square:nth-child(5) {
+            height: 340px;
+            animation-delay: 0.8s;
+        }
+        
+        .fabric-square:nth-child(6) {
+            height: 250px;
+            animation-delay: 1s;
+        }
+        
+        .fabric-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #000000;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            text-align: center;
+            /* TouchOSC readable text */
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Falling animation */
+        @keyframes fallDown {
+            0% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+            70% {
+                opacity: 1;
+            }
+            85% {
+                transform: translateY(10px);
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Bounce animation on hover */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(-8px) scale(1.02);
+            }
+            25% {
+                transform: translateY(-12px) scale(1.02);
+            }
+            50% {
+                transform: translateY(-6px) scale(1.02);
+            }
+            75% {
+                transform: translateY(-10px) scale(1.02);
+            }
+        }
+        
+        /* Selection feedback animation */
+        .fabric-square.selected {
+            animation: selectPulse 0.8s ease-out;
+            background: linear-gradient(45deg, #A80E0E, #CC1F1F);
+        }
+        
+        @keyframes selectPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(168, 14, 14, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px 10px rgba(168, 14, 14, 0.3);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(168, 14, 14, 0);
+            }
+        }
+        
+        /* iPad landscape optimizations */
+        @media screen and (orientation: landscape) and (min-width: 1024px) {
+            .fabric-container {
+                gap: 40px;
+                max-width: 1400px;
+            }
+            
+            .fabric-square {
+                min-width: 140px;
+            }
+            
+            .fabric-label {
+                font-size: 1.1rem;
+                letter-spacing: 3px;
+            }
+            
+            .fabric-square:nth-child(1) { height: 350px; }
+            .fabric-square:nth-child(2) { height: 480px; }
+            .fabric-square:nth-child(3) { height: 320px; }
+            .fabric-square:nth-child(4) { height: 440px; }
+            .fabric-square:nth-child(5) { height: 390px; }
+            .fabric-square:nth-child(6) { height: 290px; }
+        }
+        
+        /* TouchOSC compatibility enhancements */
+        @media (hover: none) and (pointer: coarse) {
+            .fabric-square:hover {
+                transform: none;
+                box-shadow: none;
+                animation: none;
+            }
+            
+            .fabric-square:active {
+                transform: translateY(-4px) scale(0.95);
+                animation: bounce 0.4s ease-in-out;
+            }
+        }
+        
+        /* Smaller screens */
+        @media (max-width: 1023px) {
+            .fabric-container {
+                gap: 20px;
+                padding: 0 20px;
+            }
+            
+            .fabric-square {
+                min-width: 80px;
+            }
+            
+            .fabric-label {
+                font-size: 0.9rem;
+                letter-spacing: 1px;
+            }
+            
+            .fabric-square:nth-child(1) { height: 200px; }
+            .fabric-square:nth-child(2) { height: 280px; }
+            .fabric-square:nth-child(3) { height: 180px; }
+            .fabric-square:nth-child(4) { height: 240px; }
+            .fabric-square:nth-child(5) { height: 220px; }
+            .fabric-square:nth-child(6) { height: 160px; }
+        }
+        
+        @media (max-width: 768px) {
+            .fabric-container {
+                gap: 15px;
+                flex-wrap: wrap;
+                height: auto;
+                align-items: center;
+            }
+            
+            .fabric-square {
+                min-width: 60px;
+                height: 120px !important;
+                writing-mode: horizontal-tb;
+            }
+            
+            .fabric-label {
+                writing-mode: horizontal-tb;
+                text-orientation: initial;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fofficesa7698back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.5"></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="fabric-container">
+            <div class="fabric-square" onclick="selectFabric('VELVET')" ontouchstart>
+                <div class="fabric-label">VELVET</div>
+            </div>
+            <div class="fabric-square" onclick="selectFabric('SILK')" ontouchstart>
+                <div class="fabric-label">SILK</div>
+            </div>
+            <div class="fabric-square" onclick="selectFabric('COTTON')" ontouchstart>
+                <div class="fabric-label">COTTON</div>
+            </div>
+            <div class="fabric-square" onclick="selectFabric('DENIM')" ontouchstart>
+                <div class="fabric-label">DENIM</div>
+            </div>
+            <div class="fabric-square" onclick="selectFabric('WOOL')" ontouchstart>
+                <div class="fabric-label">WOOL</div>
+            </div>
+            <div class="fabric-square" onclick="selectFabric('LINEN')" ontouchstart>
+                <div class="fabric-label">LINEN</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let isTransitioning = false;
+        
+        function selectFabric(fabricName) {
+            if (isTransitioning) return;
+            
+            isTransitioning = true;
+            const clickedSquare = event.target.closest('.fabric-square');
+            
+            // Add selection animation
+            clickedSquare.classList.add('selected');
+            
+            // Store selected fabric for next page
+            sessionStorage.setItem('selectedFabric', fabricName);
+            
+            // Navigate to control console after animation
+            setTimeout(() => {
+                // Add fade out effect for smooth transition
+                document.body.style.transition = 'opacity 0.5s ease';
+                document.body.style.opacity = '0';
+                
+                setTimeout(() => {
+                    // Navigate to control console page (placeholder for now)
+                    alert(`Navigating to Control Console with ${fabricName} selected`);
+                    // window.location.href = './control_console.html';
+                    isTransitioning = false;
+                    document.body.style.opacity = '1';
+                }, 500);
+            }, 800);
+        }
+        
+        // Initialize falling animation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const fabricSquares = document.querySelectorAll('.fabric-square');
+            
+            // Trigger falling animation for each square
+            fabricSquares.forEach((square, index) => {
+                setTimeout(() => {
+                    square.classList.add('animate-fall');
+                }, index * 200);
+            });
+        });
+        
+        // Touch event optimization for TouchOSC
+        document.addEventListener('touchstart', function() {}, {passive: true});
+        
+        // Keyboard navigation for accessibility
+        document.addEventListener('keydown', function(event) {
+            const squares = document.querySelectorAll('.fabric-square');
+            let currentIndex = 0;
+            
+            if (event.key === 'ArrowLeft' && currentIndex > 0) {
+                currentIndex--;
+                squares[currentIndex].focus();
+            } else if (event.key === 'ArrowRight' && currentIndex < squares.length - 1) {
+                currentIndex++;
+                squares[currentIndex].focus();
+            } else if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                if (document.activeElement && document.activeElement.classList.contains('fabric-square')) {
+                    document.activeElement.click();
+                }
+            }
+        });
+        
+        // Prevent context menu on touch devices
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        // Optimize for TouchOSC by preventing default touch behaviors where needed
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.fabric-square')) {
+                e.preventDefault();
+            }
+        }, {passive: false});
+        
+        // Ensure proper orientation handling
+        window.addEventListener('orientationchange', function() {
+            setTimeout(function() {
+                window.scrollTo(0, 0);
+                // Re-trigger animations if needed
+                const squares = document.querySelectorAll('.fabric-square');
+                squares.forEach(square => {
+                    square.style.animation = 'none';
+                    square.offsetHeight; // Trigger reflow
+                    square.style.animation = null;
+                });
+            }, 100);
+        });
+        
+        // TouchOSC-specific optimizations
+        if (navigator.userAgent.includes('TouchOSC') || window.TouchOSC) {
+            // Enhance touch responsiveness for TouchOSC
+            document.querySelectorAll('.fabric-square').forEach(square => {
+                square.addEventListener('touchstart', function() {
+                    this.style.transform = 'translateY(-4px) scale(0.95)';
+                }, {passive: true});
+                
+                square.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                }, {passive: true});
+            });
+        }
+    </script>
+</body>
+</html>

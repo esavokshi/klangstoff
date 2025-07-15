@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KLANGSTOFF Landing Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #A80E0E;
+            color: #ffffff;
+            overflow: hidden;
+            min-height: 100vh;
+            position: relative;
+            transition: background-color 1s cubic-bezier(0.4, 0, 0.2, 1);
+            /* iPad landscape optimization */
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        body.transitioning {
+            background: #0F0F0F;
+        }
+        
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo-container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            /* TouchOSC optimized touch target */
+            padding: 40px;
+        }
+        
+        .klangstoff-logo {
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: 12px;
+            color: #ffffff;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+            position: relative;
+            display: inline-block;
+            /* TouchOSC friendly sizing for iPad landscape */
+            min-width: 600px;
+            min-height: 120px;
+            line-height: 120px;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .klangstoff-logo:hover {
+            transform: scale(1.02);
+            text-shadow: 0 0 60px rgba(255, 255, 255, 0.5);
+        }
+        
+        .klangstoff-logo:active {
+            transform: scale(0.98);
+        }
+        
+        .klangstoff-logo.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* iPad landscape specific optimizations */
+        @media screen and (orientation: landscape) and (min-width: 1024px) {
+            .klangstoff-logo {
+                font-size: 6rem;
+                letter-spacing: 16px;
+                min-width: 800px;
+                min-height: 150px;
+                line-height: 150px;
+            }
+        }
+        
+        /* TouchOSC compatibility enhancements */
+        @media (hover: none) and (pointer: coarse) {
+            .klangstoff-logo:hover {
+                transform: none;
+                text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+            }
+            
+            .klangstoff-logo:active {
+                transform: scale(0.95);
+                text-shadow: 0 0 80px rgba(255, 255, 255, 0.7);
+            }
+        }
+        
+        /* Smaller screens fallback */
+        @media (max-width: 1023px) {
+            .klangstoff-logo {
+                font-size: 3.5rem;
+                letter-spacing: 8px;
+                min-width: 400px;
+                min-height: 80px;
+                line-height: 80px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .klangstoff-logo {
+                font-size: 2.5rem;
+                letter-spacing: 4px;
+                min-width: 300px;
+                min-height: 60px;
+                line-height: 60px;
+            }
+        }
+    </style>
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fofficesa7698back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.5"></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="logo-container">
+            <h1 class="klangstoff-logo" onclick="navigateToSelection()" ontouchstart>
+                KLANGSTOFF
+            </h1>
+        </div>
+    </div>
+    
+    <script>
+        function navigateToSelection() {
+            const logo = document.querySelector('.klangstoff-logo');
+            const body = document.body;
+            
+            // Prevent multiple clicks during transition
+            if (logo.classList.contains('fade-out')) {
+                return;
+            }
+            
+            // Start logo fade-out animation
+            logo.classList.add('fade-out');
+            
+            // Start background transition after a short delay
+            setTimeout(() => {
+                body.classList.add('transitioning');
+            }, 200);
+            
+            // Navigate to material selection after animations complete
+            setTimeout(() => {
+                window.location.href = './animated_material_selection_interface.html';
+            }, 1200);
+        }
+        
+        // Touch event optimization for TouchOSC
+        document.addEventListener('touchstart', function() {}, {passive: true});
+        
+        // Keyboard navigation for accessibility
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigateToSelection();
+            }
+        });
+        
+        // Prevent context menu on touch devices
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        // Optimize for TouchOSC by preventing default touch behaviors
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, {passive: false});
+        
+        // Ensure proper orientation handling
+        window.addEventListener('orientationchange', function() {
+            setTimeout(function() {
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
